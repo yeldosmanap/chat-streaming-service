@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,4 +22,6 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

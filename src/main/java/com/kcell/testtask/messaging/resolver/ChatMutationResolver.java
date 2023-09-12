@@ -7,7 +7,9 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Controller
 public class ChatMutationResolver implements GraphQLMutationResolver {
@@ -21,7 +23,7 @@ public class ChatMutationResolver implements GraphQLMutationResolver {
     public Message sendMessage(@Argument String text) {
         Message message = Message.builder()
                 .content(text)
-                .timestamp(LocalDateTime.now().toString())
+                .createdAt(Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.UTC)))
                 .build();
 
         messageSenderService.sendMessage(message);
