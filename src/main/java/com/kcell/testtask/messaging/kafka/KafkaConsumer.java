@@ -11,6 +11,6 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "${spring.kafka.consumer.topic}")
     public void listen(Message message) {
-        log.info("Message received by listener: {} | {}", message.getContent(), message.getTimestamp());
+        log.info("Message received by listener: {} | {}", message.getContent(), message.getCreatedAt());
     }
 }

@@ -1,4 +1,4 @@
 type Message {
     content: String
-    timestamp: String
+    createdAt: String
 }
