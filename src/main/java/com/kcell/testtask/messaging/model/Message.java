@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 @Entity
 @Table(name="messages")
 public class Message {
@@ -18,4 +17,7 @@ public class Message {
     private Long id;
     private String content;
     private Timestamp createdAt;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
