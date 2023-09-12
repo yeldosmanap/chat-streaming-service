@@ -4,4 +4,8 @@ spring:
     producer:
       topic: messaging-topic
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.kcell.testtask.messaging.serializer.KafkaProducerValueSerializer
+
+  graphql:
+    graphiql:
+      enabled: true

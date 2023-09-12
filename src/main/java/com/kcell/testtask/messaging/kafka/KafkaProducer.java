@@ -1,30 +1,29 @@
 package com.kcell.testtask.messaging.kafka;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.kcell.testtask.messaging.model.Message;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class KafkaProducer {
-    private static final Logger logger = LoggerFactory.getLogger(KafkaProducer.class);
     @Value("${spring.kafka.producer.topic}")
     private String topic;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Message> kafkaTemplate;
 
-    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    public KafkaProducer(KafkaTemplate<String, Message> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(Message message) {
         try {
             kafkaTemplate.send(topic, message);
-            logger.info("Message sent to kafka topic: " + topic);
+            log.info("Message sent to kafka topic: {}", topic);
         } catch (Exception e) {
-            logger.error("Exception while sending message to kafka topic: " + topic, e);
-
-            throw new RuntimeException();
+            log.error("Exception while sending message to kafka topic: {}", topic, e);
+            throw new RuntimeException(e);
         }
     }
 }

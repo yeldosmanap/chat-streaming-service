@@ -1,0 +1,19 @@
+type Subscription {
+    notifyMessageAdded: Message!
+}
+
+type Query {
+    messages: [Message!]!
+}
+
+type Mutation {
+    sendMessage(text: String): Message
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
+
