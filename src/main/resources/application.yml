@@ -5,6 +5,11 @@ spring:
       topic: messaging-topic
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: com.kcell.testtask.messaging.serializer.KafkaProducerValueSerializer
+    consumer:
+      topic: messaging-topic
+      group-id: messaging-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.kcell.testtask.messaging.serializer.KafkaConsumerValueDeserializer
 
   graphql:
     graphiql:
