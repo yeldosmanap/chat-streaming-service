@@ -1,12 +1,10 @@
 package com.kcell.testtask.messaging.kafka.consumer;
 
-import com.kcell.testtask.messaging.model.Message;
+import com.kcell.testtask.messaging.dto.kafka.MessageDto;
 import com.kcell.testtask.messaging.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -18,13 +16,13 @@ public class Task implements Runnable {
     private volatile boolean stopped = false;
     private volatile boolean started = false;
     private volatile boolean finished = false;
-    private final List<ConsumerRecord<String, Message>> records;
+    private final List<ConsumerRecord<String, MessageDto>> records;
     private final MessageRepository messageRepository;
     private final CompletableFuture<Long> completion;
     private final ReentrantLock startStopLock;
     private final AtomicLong currentOffset;
 
-    public Task(List<ConsumerRecord<String, Message>> records, MessageRepository messageRepository) {
+    public Task(List<ConsumerRecord<String, MessageDto>> records, MessageRepository messageRepository) {
         this.records = records;
         this.messageRepository = messageRepository;
         this.completion = new CompletableFuture<>();
@@ -32,16 +30,15 @@ public class Task implements Runnable {
         this.currentOffset = new AtomicLong();
     }
 
-
     public void run() {
         startStopLock.lock();
-        if (stopped){
+        if (stopped) {
             return;
         }
         started = true;
         startStopLock.unlock();
 
-        for (ConsumerRecord<String, Message> record : records) {
+        for (ConsumerRecord<String, MessageDto> record : records) {
             if (stopped)
                 break;
             try {
@@ -84,9 +81,12 @@ public class Task implements Runnable {
         return finished;
     }
 
-    private void saveToDatabase(ConsumerRecord<String, Message> record) {
-        record.value().setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        messageRepository.save(record.value());
+    private void saveToDatabase(ConsumerRecord<String, MessageDto> record) {
+        messageRepository.addMessage(
+                record.value().getUserId(),
+                record.value().getContent(),
+                record.value().getCreatedAt()
+        );
     }
 
 }

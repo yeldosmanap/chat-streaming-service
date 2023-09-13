@@ -1,6 +1,6 @@
 package com.kcell.testtask.messaging.kafka.consumer;
 
-import com.kcell.testtask.messaging.model.Message;
+import com.kcell.testtask.messaging.dto.kafka.MessageDto;
 import com.kcell.testtask.messaging.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
@@ -25,7 +25,7 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
     @Value("${spring.kafka.consumer.commit-interval-ms}")
     private static int COMMIT_INTERVAL_MILLISECONDS;
 
-    private final KafkaConsumer<String, Message> consumer;
+    private final KafkaConsumer<String, MessageDto> consumer;
 
     private final MessageRepository messageRepository;
 
@@ -42,7 +42,7 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
     private long lastCommitTime = System.currentTimeMillis();
 
     public MultithreadedKafkaConsumer(
-            KafkaConsumer<String, Message> kafkaConsumer,
+            KafkaConsumer<String, MessageDto> kafkaConsumer,
             MessageRepository messageRepository,
             @Value("${spring.kafka.consumer.topic}") String topic,
             @Value("${spring.kafka.consumer.threads-amount}") Integer threadsCount) {
@@ -67,7 +67,7 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
             while (!stopped.get()) {
                 // Fetch records from a Kafka Topic using a Kafka Consumer instance (poll method)
                 // with a timeout of {POLL_TIMEOUT_MILLS} milliseconds
-                ConsumerRecords<String, Message> records = consumer.poll(Duration.of(POLL_TIMEOUT_MILLISECONDS, ChronoUnit.MILLIS));
+                ConsumerRecords<String, MessageDto> records = consumer.poll(Duration.of(POLL_TIMEOUT_MILLISECONDS, ChronoUnit.MILLIS));
 
                 // Handle fetched records (create tasks for them)
                 handleFetchedRecords(records);
@@ -87,13 +87,13 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
     }
 
     /**
-     *
+     * Creates tasks for fetched records
      */
-    private void handleFetchedRecords(ConsumerRecords<String, Message> records) {
+    private void handleFetchedRecords(ConsumerRecords<String, MessageDto> records) {
         if (records.count() > 0) {
             List<TopicPartition> partitionsToPause = new ArrayList<>();
             records.partitions().forEach(partition -> {
-                List<ConsumerRecord<String, Message>> partitionRecords = records.records(partition);
+                List<ConsumerRecord<String, MessageDto>> partitionRecords = records.records(partition);
                 Task task = new Task(partitionRecords, messageRepository);
                 partitionsToPause.add(partition);
                 executor.submit(task);

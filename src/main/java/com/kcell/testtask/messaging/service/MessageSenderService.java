@@ -1,7 +1,7 @@
 package com.kcell.testtask.messaging.service;
 
-import com.kcell.testtask.messaging.model.Message;
+import com.kcell.testtask.messaging.dto.kafka.MessageDto;
 
 public interface MessageSenderService {
-    void sendMessage(Message message);
+    void sendMessage(MessageDto message);
 }
