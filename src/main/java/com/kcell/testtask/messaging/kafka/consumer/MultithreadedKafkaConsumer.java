@@ -19,14 +19,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @Slf4j
 public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceListener {
+    @Value("${spring.kafka.consumer.poll-timeout-ms}")
+    private static int POLL_TIMEOUT_MILLISECONDS;
+
+    @Value("${spring.kafka.consumer.commit-interval-ms}")
+    private static int COMMIT_INTERVAL_MILLISECONDS;
+
     private final KafkaConsumer<String, Message> consumer;
+
     private final MessageRepository messageRepository;
+
     private final ExecutorService executor;
+
     private final Map<TopicPartition, Task> activeTasks;
+
     private final Map<TopicPartition, OffsetAndMetadata> offsetsToCommit;
+
     private final AtomicBoolean stopped;
-    private long lastCommitTime = System.currentTimeMillis();
+
     private final String topic;
+
+    private long lastCommitTime = System.currentTimeMillis();
 
     public MultithreadedKafkaConsumer(
             KafkaConsumer<String, Message> kafkaConsumer,
@@ -44,15 +57,25 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         new Thread(this).start();
     }
 
-
+    /**
+     * This method is called by the main thread
+     */
     @Override
     public void run() {
         try {
             consumer.subscribe(Collections.singleton(topic), this);
             while (!stopped.get()) {
-                ConsumerRecords<String, Message> records = consumer.poll(Duration.of(100, ChronoUnit.MILLIS));
+                // Fetch records from a Kafka Topic using a Kafka Consumer instance (poll method)
+                // with a timeout of {POLL_TIMEOUT_MILLS} milliseconds
+                ConsumerRecords<String, Message> records = consumer.poll(Duration.of(POLL_TIMEOUT_MILLISECONDS, ChronoUnit.MILLIS));
+
+                // Handle fetched records (create tasks for them)
                 handleFetchedRecords(records);
+
+                // Check if any active tasks are finished
                 checkActiveTasks();
+
+                // Commit offsets if needed (every {c}} seconds)
                 commitOffsets();
             }
         } catch (WakeupException e) {
@@ -63,6 +86,9 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         }
     }
 
+    /**
+     *
+     */
     private void handleFetchedRecords(ConsumerRecords<String, Message> records) {
         if (records.count() > 0) {
             List<TopicPartition> partitionsToPause = new ArrayList<>();
@@ -77,10 +103,13 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         }
     }
 
+    /**
+     * Commits offsets if needed (every {c}} seconds)
+     */
     private void commitOffsets() {
         try {
             long currentTimeMillis = System.currentTimeMillis();
-            if (currentTimeMillis - lastCommitTime > 5000) {
+            if (currentTimeMillis - lastCommitTime > COMMIT_INTERVAL_MILLISECONDS) {
                 if (!offsetsToCommit.isEmpty()) {
                     consumer.commitSync(offsetsToCommit);
                     offsetsToCommit.clear();
@@ -92,10 +121,13 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         }
     }
 
-
+    /**
+     * Checks the offsets of active tasks
+     */
     private void checkActiveTasks() {
         List<TopicPartition> finishedTasksPartitions = new ArrayList<>();
         activeTasks.forEach((partition, task) -> {
+            // Check if task is finished and add it to the list of finished tasks
             if (task.isFinished()) {
                 finishedTasksPartitions.add(partition);
             }
@@ -103,18 +135,26 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
             long offset = task.getCurrentOffset();
 
             if (offset > 0) {
+                // Add offset to map of offsets to commit
                 offsetsToCommit.put(partition, new OffsetAndMetadata(offset));
             }
         });
+
+        // Remove finished tasks from the map of active tasks
         finishedTasksPartitions.forEach(activeTasks::remove);
+
+        // Resume partitions for finished tasks
         consumer.resume(finishedTasksPartitions);
     }
 
-
+    /**
+     * This method is called by the Kafka Consumer thread
+     * when going to rebalance partitions between consumer instances.
+     */
     @Override
     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
 
-        // 1. Stop all tasks handling records from revoked partitions
+        // Stop all tasks handling records from revoked partitions
         Map<TopicPartition, Task> stoppedTask = new HashMap<>();
         for (TopicPartition partition : partitions) {
             Task task = activeTasks.remove(partition);
@@ -124,7 +164,7 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
             }
         }
 
-        // 2. Wait for stopped tasks to complete processing of current record
+        // Wait for stopped tasks to complete processing of current record
         stoppedTask.forEach((partition, task) -> {
             long offset = task.waitForCompletion();
             if (offset > 0)
@@ -132,7 +172,7 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         });
 
 
-        // 3. collect offsets for revoked partitions
+        // Collect offsets for revoked partitions
         Map<TopicPartition, OffsetAndMetadata> revokedPartitionOffsets = new HashMap<>();
         partitions.forEach(partition -> {
             OffsetAndMetadata offset = offsetsToCommit.remove(partition);
@@ -140,7 +180,7 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
                 revokedPartitionOffsets.put(partition, offset);
         });
 
-        // 4. commit offsets for revoked partitions
+        // Commit offsets for revoked partitions
         try {
             consumer.commitSync(revokedPartitionOffsets);
         } catch (Exception e) {
@@ -148,6 +188,9 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         }
     }
 
+    /**
+     * This method is called when the Kafka Consumer thread is assigned partitions after rebalancing.
+     */
     @Override
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
         consumer.resume(partitions);
