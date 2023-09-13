@@ -1,5 +1,13 @@
-type Subscription {
-    notifyMessageAdded: Message!
+type Message {
+    id: ID!
+    content: String
+    createdAt: String
+    user: User
+}
+
+type User {
+    id: ID!
+    email: String!
 }
 
 type Query {
@@ -13,7 +21,6 @@ type Mutation {
 schema {
     query: Query
     mutation: Mutation
-    subscription: Subscription
 }
 
 
