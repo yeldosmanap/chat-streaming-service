@@ -1,6 +1,6 @@
 package com.kcell.testtask.messaging.service.implementations;
 
-import com.kcell.testtask.messaging.kafka.KafkaProducer;
+import com.kcell.testtask.messaging.kafka.producer.KafkaProducer;
 import com.kcell.testtask.messaging.model.Message;
 import com.kcell.testtask.messaging.service.MessageSenderService;
 import org.springframework.stereotype.Service;

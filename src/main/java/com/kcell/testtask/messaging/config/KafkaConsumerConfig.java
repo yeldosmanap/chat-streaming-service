@@ -1,16 +1,17 @@
 package com.kcell.testtask.messaging.config;
 
 import com.kcell.testtask.messaging.model.Message;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 @Configuration
 public class KafkaConsumerConfig {
+
     @Bean
-    public ConsumerFactory<String, Message> consumerFactory(KafkaProperties kafkaProperties){
-        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties());
+    public KafkaConsumer<String, Message> kafkaConsumer(KafkaProperties kafkaProperties){
+        var consumerProperties = kafkaProperties.buildConsumerProperties();
+        return new KafkaConsumer<>(consumerProperties);
     }
 }

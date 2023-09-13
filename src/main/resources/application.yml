@@ -13,14 +13,19 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     producer:
-      topic: messaging-topic
+      topic: ${KAFKA_TOPIC_NAME}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: com.kcell.testtask.messaging.serializer.KafkaProducerValueSerializer
     consumer:
-      topic: messaging-topic
-      group-id: messaging-group
+      topic: ${KAFKA_TOPIC_NAME}
+      group-id: ${KAFKA_CONSUMER_GROUP_ID}
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: com.kcell.testtask.messaging.serializer.KafkaConsumerValueDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      poll-timeout-ms: ${CONSUMER_POLL_TIMEOUT_MILLISECONDS}
+      commit-interval-ms: ${CONSUMER_COMMIT_INTERVAL_MILLISECONDS}
+      threads-amount: ${CONSUMER_THREADS_AMOUNT}
   jpa:
     properties:
       hibernate:
