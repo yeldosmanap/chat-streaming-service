@@ -5,10 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserResponseDto {
-    private Long id;
-    private String username;
-    private String email;
-    private boolean succeed;
+public class RegisterResponseDto {
+    private boolean success;
     private String message;
+    private String error;
 }
