@@ -1,4 +1,4 @@
-package com.kcell.testtask.messaging.kafka;
+package com.kcell.testtask.messaging.kafka.producer;
 
 import com.kcell.testtask.messaging.model.Message;
 import lombok.extern.slf4j.Slf4j;
