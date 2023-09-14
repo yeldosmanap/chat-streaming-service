@@ -2,9 +2,11 @@ package com.kcell.testtask.messaging.dto.request;
 
 import com.kcell.testtask.messaging.model.Role;
 import com.kcell.testtask.messaging.model.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class RegisterRequestDto {
     private String username;
     private String email;
