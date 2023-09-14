@@ -55,9 +55,7 @@ It is a messaging application that allows users to send and retrieve messages.
 ## Endpoints
 * `POST /api/v1/auth/login` - login
 * `POST /api/v1/auth/register` - register
-* `GET /api/v1/admin` - admin panel
-* `GET /api/v1/admin/messages` - get all messages
-* `GET /api/v1/admin/messages/{id}` - get message by id
+* `DELETE /api/v1/admin?userId=<user-id>` - admin panel
 * `Query /graphql` - GraphQL endpoint for retrieving and sending messages
 
 Example of GraphQL mutation and query:
