@@ -196,6 +196,10 @@ public class MultithreadedKafkaConsumer implements Runnable, ConsumerRebalanceLi
         consumer.resume(partitions);
     }
 
+    public MessageRepository getMessageRepository() {
+        return messageRepository;
+    }
+
     public void stopConsuming() {
         stopped.set(true);
         consumer.wakeup();
