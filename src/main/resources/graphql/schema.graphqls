@@ -1,0 +1,26 @@
+type Message {
+    id: ID!
+    content: String
+    createdAt: String
+    user: User
+}
+
+type User {
+    id: ID!
+    email: String!
+}
+
+type Query {
+    messages: [Message!]!
+}
+
+type Mutation {
+    sendMessage(text: String): Message
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+
