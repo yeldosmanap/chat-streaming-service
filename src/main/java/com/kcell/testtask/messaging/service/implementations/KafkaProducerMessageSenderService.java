@@ -1,7 +1,7 @@
 package com.kcell.testtask.messaging.service.implementations;
 
+import com.kcell.testtask.messaging.dto.kafka.MessageDto;
 import com.kcell.testtask.messaging.kafka.producer.KafkaProducer;
-import com.kcell.testtask.messaging.model.Message;
 import com.kcell.testtask.messaging.service.MessageSenderService;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ public class KafkaProducerMessageSenderService implements MessageSenderService {
     }
 
     @Override
-    public void sendMessage(Message message) {
+    public void sendMessage(MessageDto message) {
         kafkaProducer.sendMessage(message);
     }
 }

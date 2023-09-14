@@ -2,6 +2,7 @@ package com.kcell.testtask.messaging.service.implementations;
 
 import com.kcell.testtask.messaging.dto.request.UserCreateRequestDto;
 import com.kcell.testtask.messaging.dto.response.UserResponseDto;
+import com.kcell.testtask.messaging.exception.UserNotFoundException;
 import com.kcell.testtask.messaging.model.User;
 import com.kcell.testtask.messaging.repository.UserRepository;
 import com.kcell.testtask.messaging.service.UserService;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto deleteUserById(Long id) {
         var user = userRepository.getUserById(id);
         if (user == null) {
-            throw new RuntimeException("User with id " + id + " not found");
+            throw new UserNotFoundException("User with id " + id + " not found");
         }
 
         userRepository.deleteById(id);

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface MessageService {
     List<Message> getMessages();
+    List<Message> getMessagesWithAuthor();
 }

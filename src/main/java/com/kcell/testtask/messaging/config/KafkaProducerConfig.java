@@ -1,6 +1,6 @@
 package com.kcell.testtask.messaging.config;
 
-import com.kcell.testtask.messaging.model.Message;
+import com.kcell.testtask.messaging.dto.kafka.MessageDto;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +12,12 @@ import org.springframework.kafka.core.ProducerFactory;
 public class KafkaProducerConfig {
 
     @Bean
-    public ProducerFactory<String, Message> producerFactory(KafkaProperties kafkaProperties) {
+    public ProducerFactory<String, MessageDto> producerFactory(KafkaProperties kafkaProperties) {
         return new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties());
     }
 
     @Bean
-    public KafkaTemplate<String, Message> kafkaTemplate(ProducerFactory<String, Message> producerFactory) {
+    public KafkaTemplate<String, MessageDto> kafkaTemplate(ProducerFactory<String, MessageDto> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }
