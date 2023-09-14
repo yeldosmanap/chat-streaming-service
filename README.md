@@ -4,13 +4,14 @@
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup and run](#setup-and-run)
+* [Endpoints](#endpoints)
 * [Features](#features)
 * [Future plans](#future-plans)
 * [Contact](#contact)
 * [References](#references)
 
 ## General info 
-This project is a Kafka multi-threaded message processing application. 
+This project is a Kafka multithreaded message processing application. 
 It is a messaging application that allows users to send and retrieve messages.
 
 ## Technologies
@@ -23,8 +24,8 @@ It is a messaging application that allows users to send and retrieve messages.
 * Spring Security
 * Spring Actuator
 
-## Setup and run
-1. To setup this project, you should configure `application.yml` file in the `resources` folder.
+## Set up and run
+1. To set up this project, you should configure `application.yml` file in the `resources` folder.
 
 2. Also, set up the following properties:
     ```
@@ -47,7 +48,37 @@ It is a messaging application that allows users to send and retrieve messages.
     (macOS) bin/kafka-topics.sh --create --topic <topic-name> --bootstrap-server localhost:9092
     ```
 5. Run the application with required variables.
+6. To application using Postman or GraphQL Playground using following URL: `http://localhost:8080/graphql`
+7. To access admin panel, go to `http://localhost:8080/api/v1/admin`
+8. To access auth endpoints, go to `http://localhost:8080/api/v1/auth`
 
+## Endpoints
+* `POST /api/v1/auth/login` - login
+* `POST /api/v1/auth/register` - register
+* `GET /api/v1/admin` - admin panel
+* `GET /api/v1/admin/messages` - get all messages
+* `GET /api/v1/admin/messages/{id}` - get message by id
+* `Query /graphql` - GraphQL endpoint for retrieving and sending messages
+
+Example of GraphQL mutation and query:
+````
+mutation SendMessage {
+    sendMessage (text: "<your-message>") {
+        content
+        createdAt
+    }
+}
+````
+And 
+````
+query Messages {
+    messages {
+        id
+        content
+        createdAt
+    }
+}
+````
 ## Features
  - Sending and retrieving messages
  - Processing messages in kafka topic
@@ -64,6 +95,7 @@ It is a messaging application that allows users to send and retrieve messages.
     - Improve security
     - Improve logging
     - Add more tests
+
 ## Contact
 Created by [@yeldos-manap](
 https://www.linkedin.com/in/yeldos-manap
