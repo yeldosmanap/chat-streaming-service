@@ -10,8 +10,8 @@
 * [References](#references)
 
 ## General info 
-This project is a simple Kafka message processing application. It is a part of the [Kafka Message processing application]
-project.
+This project is a Kafka multi-threaded message processing application. 
+It is a messaging application that allows users to send and retrieve messages.
 
 ## Technologies
 * Java 17
@@ -60,9 +60,10 @@ project.
     - Switch serialization/deserialization to Avro
     - Work on Custom Exception Handling
     - Add more features to admin panel
+    - Add paging and sorting
+    - Improve security
     - Improve logging
     - Add more tests
-
 ## Contact
 Created by [@yeldos-manap](
 https://www.linkedin.com/in/yeldos-manap
